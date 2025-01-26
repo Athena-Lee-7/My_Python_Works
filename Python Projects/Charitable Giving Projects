@@ -1,0 +1,43 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+df = pd.read_csv("charitable_giving.csv")
+df.head()
+df.describe()
+
+reg = smf.ols(formula = 'months_since_last_donation ~ treatment', data = df)
+result = reg.fit()
+print(result.summary())
+
+reg1 = smf.ols(formula = 'donation_dummy ~ treatment', data = df)
+result1 = reg1.fit()
+print(result1.summary())
+
+match_ratio1 = (df['match_ratio'] == 1)
+match_ratio2 = (df['match_ratio'] == 2)
+match_ratio3 = (df['match_ratio'] == 3)
+
+reg2 = smf.ols(formula = 'donation_dummy ~ match_ratio1 + match_ratio2 + match_ratio3', data = df)
+result2 = reg2.fit()
+print(result2.summary())
+
+blue_states = df[df['red_state_dummy'] == 0]
+red_states = df[df['red_state_dummy'] == 1]  
+
+reg_blue = smf.ols(formula = 'donation_dummy ~ treatment', data = blue_states)
+result_blue = reg_blue.fit()
+print(result_blue.summary())
+reg_red = smf.ols(formula = 'donation_dummy ~ treatment', data = red_states)
+result_red = reg_red.fit()
+print(result_red.summary())
+
+reg_money = smf.ols(formula = 'donation_amount ~ treatment', data = df)
+result_money = reg_money.fit()
+print(result_money.summary())
+
+donation = df[df['donation_dummy'] == 1]
+reg_conditional = smf.ols(formula = 'donation_amount ~ treatment', data = donation)
+result_conditional = reg_conditional.fit()
+print(result_conditional.summary())
